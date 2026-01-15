@@ -2,6 +2,7 @@
   "name": "habit-tracker-backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "homepage": "https://github.com/psc3245/Habit-Tracker-Backend#readme",
   "bugs": {
     "url": "https://github.com/psc3245/Habit-Tracker-Backend/issues"
@@ -12,7 +13,6 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

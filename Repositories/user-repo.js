@@ -20,6 +20,10 @@ export function findById(id) {
   return users.find(u => u.id === id) ?? null;
 }
 
+export function findByUsername(username) {
+  return users.find(u => u.username === username) ?? null;
+}
+
 export function update(id, updates) {
   const user = users.find(u => u.id === id);
   if (!user) return null;

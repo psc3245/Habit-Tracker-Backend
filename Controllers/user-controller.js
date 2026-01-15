@@ -1,14 +1,47 @@
-import * as userService from "../Services/user.service.js";
-import { createUserSchema } from "../Services/user.service.js";
+import * as userService from "../Services/user-service.js";
 
-export async function createUserController(req, res) {
+export async function create(req, res) {
   try {
     // Validate + coerce input
-    const data = createUserSchema.parse(req.body);
+    const data = userService.createUserSchema.parse(req.body);
 
     const user = await userService.createUser(data);
 
     res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function findAllOrByUsername(req, res) {
+  try {
+    const { username } = req.query;
+
+    const users = username
+      ? await userService.findByUsername(username)
+      : await userService.findAll();
+
+    res.json(users);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function findById(req, res) {
+  try {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+
+    const user = await userService.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
