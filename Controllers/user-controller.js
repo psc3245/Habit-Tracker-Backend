@@ -46,3 +46,45 @@ export async function findById(req, res) {
     res.status(400).json({ error: err.message });
   }
 }
+
+export async function updateUser(req, res) {
+  try {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+
+    const data = userService.updateUserSchema.parse(req.body);
+
+    const updated = await userService.updateUser(id, data);
+
+    if (!updated) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function deleteUser(req, res) {
+  try {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+
+    const deleted = await userService.deleteUser(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}

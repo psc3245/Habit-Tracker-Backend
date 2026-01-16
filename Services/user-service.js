@@ -16,9 +16,21 @@ export const findUserSchema = z
   .refine(
     data => data.id || data.username,
     { message: "Must provide id or username" }
-  );
+);
 
-export async function createUser({ email, username, pass, dob,  }) {
+export const updateUserSchema = z.object({
+  email: z.email().optional(),
+  username: z.string().optional(),
+  pass: z.string().optional(),
+  dob: z.coerce.date().optional(),
+})
+.refine(
+  data => data.email || data.username || data.pass || data.dob, {
+    message: "Must provide at least one field besides id"
+  }
+);
+
+export async function createUser({ email, username, pass, dob, }) {
   if (!email) {
     throw new Error("email required");
   }
@@ -49,4 +61,20 @@ export async function findByUsername(username) {
   }
 
   return userRepo.findByUsername(username);
+}
+
+export async function updateUser(id, updates) {
+  if (!id) {
+    throw new Error("id required");
+  }
+
+  return userRepo.update(id, updates);
+}
+
+export async function deleteUser(id) {
+  if (!id) {
+    throw new Error("id required");
+  }
+
+  return userRepo.remove(id);
 }
