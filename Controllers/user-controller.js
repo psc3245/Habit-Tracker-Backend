@@ -1,6 +1,6 @@
 import * as userService from "../Services/user-service.js";
 
-export async function create(req, res) {
+export async function createUser(req, res) {
   try {
     // Validate + coerce input
     const data = userService.createUserSchema.parse(req.body);
@@ -13,7 +13,7 @@ export async function create(req, res) {
   }
 }
 
-export async function findAllOrByUsername(req, res) {
+export async function findAllUsersOrByUsername(req, res) {
   try {
     const { username } = req.query;
 
@@ -27,7 +27,7 @@ export async function findAllOrByUsername(req, res) {
   }
 }
 
-export async function findById(req, res) {
+export async function findUserById(req, res) {
   try {
     const id = Number(req.params.id);
 

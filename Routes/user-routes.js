@@ -3,10 +3,10 @@ import * as userController from "../Controllers/user-controller.js";
 
 const router = Router();
 
-router.post("/", userController.create);
+router.post("/", userController.createUser);
 
-router.get("/", userController.findAllOrByUsername);
-router.get("/:id", userController.findById);
+router.get("/", userController.findAllUsersOrByUsername);
+router.get("/:id", userController.findUserById);
 
 
 router.put("/:id", userController.updateUser);
