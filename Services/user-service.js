@@ -52,6 +52,9 @@ export async function signUp({ email, username, pass, dob }) {
   });
   if (!res) throw new Error("Signup attempt failed");
 
+  console.log("Signup complete");
+  console.log(res);
+
   return res;
 }
 
@@ -60,6 +63,9 @@ export async function login({ email, username, pass }) {
 
   const user = await userRepo.login({ email, username, pass });
   if (!user) throw new Error("Login attempt failed");
+
+  console.log("login complete");
+  console.log(user);
 
   return user;
 }
