@@ -3,7 +3,8 @@ import * as userController from "../Controllers/user-controller.js";
 
 const router = Router();
 
-router.post("/", userController.signUp);
+router.post("/signup", userController.signUp);
+router.get("/login", userController.login);
 
 router.get("/", userController.findAllUsersOrByUsername);
 router.get("/:id", userController.findUserById);
