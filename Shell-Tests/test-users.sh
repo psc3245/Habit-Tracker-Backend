@@ -32,11 +32,32 @@ echo
 # -----------------------------
 # CREATE
 # -----------------------------
-test_case "Create user" \
-"curl -i -s -X POST $BASE_URL \
+test_case "Sign up user" \
+"curl -i -s -X POST $BASE_URL/signup \
   -H 'Content-Type: application/json' \
   -d '{\"email\":\"test@test.com\",\"username\":\"test\",\"pass\":\"pw\",\"dob\":\"2000-01-01\"}'" \
 "201"
+
+# -----------------------------
+# LOGIN
+# -----------------------------
+test_case "Login with username" \
+"curl -i -s -X GET $BASE_URL/login \
+  -H 'Content-Type: application/json' \
+  -d '{\"username\":\"test\",\"pass\":\"pw\"}'" \
+"200"
+
+test_case "Login with wrong password" \
+"curl -i -s -X GET $BASE_URL/login \
+  -H 'Content-Type: application/json' \
+  -d '{\"username\":\"test\",\"pass\":\"wrong\"}'" \
+"400"
+
+test_case "Login with non-existent user" \
+"curl -i -s -X GET $BASE_URL/login \
+  -H 'Content-Type: application/json' \
+  -d '{\"username\":\"nonexistent\",\"pass\":\"pw\"}'" \
+"400"
 
 # -----------------------------
 # UPDATE
@@ -80,4 +101,3 @@ else
   echo " ❌ SOME TESTS FAILED"
   exit 1
 fi
-

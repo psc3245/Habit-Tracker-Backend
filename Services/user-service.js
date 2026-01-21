@@ -10,13 +10,14 @@ export const signUpSchema = z.object({
 
 export const loginSchema = z
   .object({
-    email: z.number().optional(),
+    email: z.string().email().optional(),
     username: z.string().optional(),
     pass: z.string(),
   })
   .refine((data) => data.email || data.username, {
-    message: "Must provide id or username",
+    message: "Must provide email or username",
   });
+
 
 export const findUserSchema = z
   .object({
@@ -43,7 +44,7 @@ export async function signUp({ email, username, pass, dob }) {
     throw new Error("email required");
   }
 
-  let res = userRepo.create({
+  let res = userRepo.signUp({
     email,
     username,
     pass,
@@ -55,18 +56,12 @@ export async function signUp({ email, username, pass, dob }) {
 }
 
 export async function login({ email, username, pass }) {
-  if (!email || !username) {
-    throw new Error("email or username required");
-  }
+  if (!email && !username) throw new Error("email or username required");
 
-  let res = userRepo.login({
-    email,
-    username,
-    pass
-  });
-  if (!res) throw new Error("Login attempt failed");
+  const user = await userRepo.login({ email, username, pass });
+  if (!user) throw new Error("Login attempt failed");
 
-  return res;
+  return user;
 }
 
 export async function findAll() {

@@ -24,12 +24,18 @@ export function findByUsername(username) {
   return users.find(u => u.username === username) ?? null;
 }
 
-export function login(user) {
-  found = users.find(u => u.username === username) ?? null;
-  if (found == null) return false;
-  if (user.pass == found.pass) return found;
-  return false;
+export function login({ email, username, pass }) {
+  let found;
+  if (email) {
+    found = users.find(u => u.email === email) ?? null;
+  } else {
+    found = users.find(u => u.username === username) ?? null;
+  }
+
+  if (!found) return null;
+  return found.pass === pass ? found : null;
 }
+
 
 export function update(id, updates) {
   const user = users.find(u => u.id === id);
