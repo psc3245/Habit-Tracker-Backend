@@ -1,14 +1,27 @@
 import * as userService from "../Services/user-service.js";
 
-export async function createUser(req, res) {
+export async function signUp(req, res) {
   try {
     // Validate + coerce input
-    const data = userService.createUserSchema.parse(req.body);
+    const data = userService.signUpSchema.parse(req.body);
 
-    const user = await userService.createUser(data);
+    const user = await userService.signUp(data);
 
     res.status(201).json(user);
   } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function login(req, res) {
+  try {
+    const data = userService.loginSchema.parse(req.body);
+
+    const user = await userService.signUp(data);
+
+    res.status(201).json(user);
+  }
+  catch (err) {
     res.status(400).json({ error: err.message });
   }
 }

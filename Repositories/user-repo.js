@@ -2,7 +2,7 @@
 let users = [];
 let nextId = 1;
 
-export function create(user) {
+export function signUp(user) {
   const newUser = {
     id: nextId++,
     ...user,
@@ -22,6 +22,13 @@ export function findById(id) {
 
 export function findByUsername(username) {
   return users.find(u => u.username === username) ?? null;
+}
+
+export function login(user) {
+  found = users.find(u => u.username === username) ?? null;
+  if (found == null) return false;
+  if (user.pass == found.pass) return found;
+  return false;
 }
 
 export function update(id, updates) {

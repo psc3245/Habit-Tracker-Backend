@@ -1,46 +1,72 @@
 import * as z from "zod";
 import * as userRepo from "../Repositories/user-repo.js";
 
-export const createUserSchema = z.object({
+export const signUpSchema = z.object({
   email: z.email(),
   username: z.string(),
   pass: z.string(),
   dob: z.coerce.date(),
 });
 
+export const loginSchema = z
+  .object({
+    email: z.number().optional(),
+    username: z.string().optional(),
+    pass: z.string(),
+  })
+  .refine((data) => data.email || data.username, {
+    message: "Must provide id or username",
+  });
+
 export const findUserSchema = z
   .object({
     id: z.number().optional(),
     username: z.string().optional(),
   })
-  .refine(
-    data => data.id || data.username,
-    { message: "Must provide id or username" }
-);
+  .refine((data) => data.id || data.username, {
+    message: "Must provide id or username",
+  });
 
-export const updateUserSchema = z.object({
-  email: z.email().optional(),
-  username: z.string().optional(),
-  pass: z.string().optional(),
-  dob: z.coerce.date().optional(),
-})
-.refine(
-  data => data.email || data.username || data.pass || data.dob, {
-    message: "Must provide at least one field besides id"
-  }
-);
+export const updateUserSchema = z
+  .object({
+    email: z.email().optional(),
+    username: z.string().optional(),
+    pass: z.string().optional(),
+    dob: z.coerce.date().optional(),
+  })
+  .refine((data) => data.email || data.username || data.pass || data.dob, {
+    message: "Must provide at least one field besides id",
+  });
 
-export async function createUser({ email, username, pass, dob, }) {
+export async function signUp({ email, username, pass, dob }) {
   if (!email) {
     throw new Error("email required");
   }
 
-  return userRepo.create({
+  let res = userRepo.create({
     email,
     username,
     pass,
     dob,
   });
+  if (!res) throw new Error("Signup attempt failed");
+
+  return res;
+}
+
+export async function login({ email, username, pass }) {
+  if (!email || !username) {
+    throw new Error("email or username required");
+  }
+
+  let res = userRepo.login({
+    email,
+    username,
+    pass
+  });
+  if (!res) throw new Error("Login attempt failed");
+
+  return res;
 }
 
 export async function findAll() {
