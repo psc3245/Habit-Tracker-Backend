@@ -1,10 +1,15 @@
-// repositories/user.repository.js
+// repositories/habit.repository.js
 let habits = [];
 let nextId = 1;
 
 export function create(habit) {
+  if (!habit.userId) {
+    throw new Error("Habit must belong to a user");
+  }
+
   const newHabit = {
     id: nextId++,
+    archived: false,
     ...habit,
   };
 
@@ -18,6 +23,10 @@ export function findAll() {
 
 export function findById(id) {
   return habits.find(h => h.id === id) ?? null;
+}
+
+export function findByUserId(userId) {
+  return habits.filter(h => h.userId === userId);
 }
 
 export function update(id, updates) {

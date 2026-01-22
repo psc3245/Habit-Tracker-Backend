@@ -1,5 +1,6 @@
 import * as z from "zod";
 import * as userRepo from "../Repositories/user-repo.js";
+import * as habitRepo from "../Repositories/habit-repo.js";
 
 export const signUpSchema = z.object({
   email: z.email(),
@@ -17,7 +18,6 @@ export const loginSchema = z
   .refine((data) => data.email || data.username, {
     message: "Must provide email or username",
   });
-
 
 export const findUserSchema = z
   .object({
@@ -40,21 +40,12 @@ export const updateUserSchema = z
   });
 
 export async function signUp({ email, username, pass, dob }) {
-  if (!email) {
-    throw new Error("email required");
-  }
+  if (!email) throw new Error("email required");
 
-  let res = userRepo.signUp({
-    email,
-    username,
-    pass,
-    dob,
-  });
+  let res = userRepo.signUp({ email, username, pass, dob });
   if (!res) throw new Error("Signup attempt failed");
 
-  console.log("Signup complete");
-  console.log(res);
-
+  console.log("Signup complete", res);
   return res;
 }
 
@@ -64,9 +55,7 @@ export async function login({ email, username, pass }) {
   const user = await userRepo.login({ email, username, pass });
   if (!user) throw new Error("Login attempt failed");
 
-  console.log("login complete");
-  console.log(user);
-
+  console.log("login complete", user);
   return user;
 }
 
@@ -75,33 +64,30 @@ export async function findAll() {
 }
 
 export async function findById(id) {
-  if (!id) {
-    throw new Error("id required");
-  }
-
+  if (!id) throw new Error("id required");
   return userRepo.findById(id);
 }
 
 export async function findByUsername(username) {
-  if (!username) {
-    throw new Error("username required");
-  }
-
+  if (!username) throw new Error("username required");
   return userRepo.findByUsername(username);
 }
 
 export async function updateUser(id, updates) {
-  if (!id) {
-    throw new Error("id required");
-  }
-
+  if (!id) throw new Error("id required");
   return userRepo.update(id, updates);
 }
 
 export async function deleteUser(id) {
-  if (!id) {
-    throw new Error("id required");
-  }
-
+  if (!id) throw new Error("id required");
   return userRepo.remove(id);
+}
+
+export async function findHabitsByUserId(userId) {
+  if (!userId) throw new Error("userId required");
+
+  const allHabits = habitRepo.findAll();
+  const userHabits = allHabits.filter((h) => h.userId === userId);
+
+  return userHabits;
 }
