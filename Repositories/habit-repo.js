@@ -3,13 +3,13 @@ let habits = [];
 let nextId = 1;
 
 export function create(habit) {
-  const newUser = {
+  const newHabit = {
     id: nextId++,
     ...habit,
   };
 
-  habits.push(newUser);
-  return newUser;
+  habits.push(newHabit);
+  return newHabit;
 }
 
 export function findAll() {

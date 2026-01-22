@@ -9,7 +9,7 @@ export async function createHabit(req, res) {
         res.status(201).json(habit);
     }
     catch (err) {
-        res.status(400).json({message: err});
+        res.status(400).json({message: err.message});
     }
 
 }
@@ -19,7 +19,7 @@ export async function getHabits(req, res) {
         const habits = habitService.findAllHabits();
         res.status(200).json(habits);
     }catch (err) {
-        res.status(400).json({message: err});
+        res.status(400).json({message: err.message});
     }
 
 }

@@ -6,7 +6,7 @@ export const createHabitSchema = z.object({
   name: z.string(),
   schedule: z.string(), // Daily | Weekly | Monthly | Other ??
   target: z.number(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
 });
 
 export const updateHabitSchema = z
@@ -19,11 +19,11 @@ export const updateHabitSchema = z
   })
   .refine(
     (data) =>
-      !data.userId ||
-      !data.name ||
-      !data.schedule ||
-      !data.target ||
-      !data.createdAt,
+      data.userId ||
+      data.name ||
+      data.schedule ||
+      data.target ||
+      data.createdAt,
     {
       message: "Need at least one field to update",
     }
@@ -57,7 +57,7 @@ export async function findAllHabits() {
 }
 
 export async function findHabitById(id) {
-  return habitRepo.findById();
+  return habitRepo.findById(id);
 }
 
 export async function updateHabit(id, updates) {
