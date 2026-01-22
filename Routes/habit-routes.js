@@ -3,13 +3,13 @@ import * as habitController from "../Controllers/habit-controller.js";
 
 const router = Router();
 
-router.post("/", () => {});
+router.post("/", habitController.createHabit);
 
-router.get("/", () => {});
+router.get("/", habitController.getHabits);
 
 
-router.put("/", () => {});
+router.put("/:id", habitController.updateHabit);
 
-router.delete("/", () => {});
+router.delete("/:id", habitController.removeHabit);
 
 export default router;
