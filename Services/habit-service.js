@@ -6,6 +6,7 @@ export const createHabitSchema = z.object({
   name: z.string(),
   schedule: z.string(), // Daily | Weekly | Monthly | Other ??
   target: z.number(),
+  tags: z.array(z.string()).default([]),
   createdAt: z.coerce.date().optional(),
 });
 
@@ -15,18 +16,12 @@ export const updateHabitSchema = z
     name: z.string().optional(),
     schedule: z.string().optional(),
     target: z.number().optional(),
+    tags: z.array(z.string()).default([]),
     createdAt: z.coerce.date().optional(),
   })
   .refine(
-    (data) =>
-      data.userId ||
-      data.name ||
-      data.schedule ||
-      data.target ||
-      data.createdAt,
-    {
-      message: "Need at least one field to update",
-    }
+    (data) => Object.keys(data).length > 0,
+    { message: "Need at least one field to update" }
   );
 
 export async function createHabit({
@@ -34,20 +29,23 @@ export async function createHabit({
   name,
   schedule,
   target,
+  tags = [],
   createdAt,
 }) {
-  if (!userId || !name || !target)
+  if (!userId || !name || !target) {
     throw new Error("Needs userId, name, and target at minimum");
+  }
 
-  let res = habitRepo.create({
+  const res = habitRepo.create({
     userId,
     name,
     schedule,
     target,
+    tags,
     createdAt,
   });
 
-  if (!res) throw new Error("Uknown repository error");
+  if (!res) throw new Error("Unknown repository error");
 
   return res;
 }
