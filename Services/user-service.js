@@ -89,5 +89,6 @@ export async function findHabitsByUserId(userId) {
   const allHabits = habitRepo.findAll();
   const userHabits = allHabits.filter((h) => h.userId === userId);
 
+  console.log("Found habits for userId", userId, userHabits);
   return userHabits;
 }
