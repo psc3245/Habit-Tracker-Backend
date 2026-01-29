@@ -6,7 +6,8 @@ export const createHabitSchema = z.object({
   name: z.string(),
   schedule: z.string(), // Daily | Weekly | Monthly | Other ??
   target: z.number(),
-  tags: z.array(z.string()).default([]),
+  type: z.enum(['checkbox', 'counter', 'duration', 'slider']).default('checkbox'),
+  availableTags: z.array(z.string()).default([]),
   createdAt: z.coerce.date().optional(),
 });
 
@@ -16,7 +17,7 @@ export const updateHabitSchema = z
     name: z.string().optional(),
     schedule: z.string().optional(),
     target: z.number().optional(),
-    tags: z.array(z.string()).default([]),
+    availableTags: z.array(z.string()).default([]),
     createdAt: z.coerce.date().optional(),
   })
   .refine(
@@ -29,7 +30,7 @@ export async function createHabit({
   name,
   schedule,
   target,
-  tags = [],
+  availableTags = [],
   createdAt,
 }) {
   if (!userId || !name || !target) {
@@ -41,7 +42,7 @@ export async function createHabit({
     name,
     schedule,
     target,
-    tags,
+    availableTags,
     createdAt,
   });
 
