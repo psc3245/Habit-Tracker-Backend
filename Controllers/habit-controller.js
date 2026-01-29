@@ -1,10 +1,11 @@
 import * as habitService from "../Services/habit-service.js";
 
 export async function createHabit(req, res) {
+  console.log("Creating habit with data:", req.body);
     try {
         const data = habitService.createHabitSchema.parse(req.body);
 
-        const habit = habitService.createHabit(data);
+        const habit = await habitService.createHabit(data);
 
         res.status(201).json(habit);
     }
