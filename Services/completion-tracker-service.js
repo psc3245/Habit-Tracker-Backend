@@ -20,6 +20,10 @@ export const updateCompletionSchema = z
     message: "Need at least one field to update",
   });
 
+export const deleteByHabitAndDateSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+
 export async function createCompletion({
   habitId,
   userId,
@@ -41,7 +45,7 @@ export async function createCompletion({
 
   const existingCompletion = await completionRepo.findByHabitAndDate(
     habitId,
-    date
+    date,
   );
   if (existingCompletion) {
     return completionRepo.update(existingCompletion.id, {
@@ -70,17 +74,17 @@ export async function findCompletionById(id) {
 }
 
 export async function findCompletionsByUserAndDate(userId, date) {
-    if (!userId || !date) {
-        throw new Error("userId and date required");
-    }
-    return completionRepo.findByUserAndDate(userId, date);
+  if (!userId || !date) {
+    throw new Error("userId and date required");
+  }
+  return completionRepo.findByUserAndDate(userId, date);
 }
 
 export async function findCompletionsByHabit(habitId) {
-    if (!habitId) {
-        throw new Error("habitId required");
-    }
-    return completionRepo.findByHabit(habitId);
+  if (!habitId) {
+    throw new Error("habitId required");
+  }
+  return completionRepo.findByHabit(habitId);
 }
 
 export async function updateCompletion(id, updates) {
@@ -89,12 +93,30 @@ export async function updateCompletion(id, updates) {
   }
   const completion = await completionRepo.update(id, updates);
   if (!completion) {
-        throw new Error("Completion not found");
-    }
+    throw new Error("Completion not found");
+  }
   return completion;
 }
 
 export async function deleteCompletion(id) {
   const success = await completionRepo.remove(id);
   return success;
+}
+
+export async function deleteCompletionByHabitAndDate(userId, habitId, date) {
+  if (!userId || !habitId || !date) {
+    throw new Error("userId, habitId, and date required");
+  }
+
+  const habit = await habitRepo.findById(habitId);
+  if (!habit || habit.userId !== userId) {
+    throw new Error("Habit not found or does not belong to user");
+  }
+
+  const completion = await completionRepo.findByHabitAndDate(habitId, date);
+  if (!completion) {
+    return false;
+  }
+
+  return completionRepo.remove(completion.id);
 }
