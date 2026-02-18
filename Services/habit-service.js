@@ -30,6 +30,7 @@ export async function createHabit({
   name,
   schedule,
   target,
+  type,
   availableTags = [],
   createdAt,
 }) {
@@ -42,6 +43,7 @@ export async function createHabit({
     name,
     schedule,
     target,
+    type,
     availableTags,
     createdAt,
   });

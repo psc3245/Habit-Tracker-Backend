@@ -7,14 +7,14 @@ export const createCompletionSchema = z.object({
   habitId: z.number(),
   userId: z.number(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  selectedTag: z.string().optional(),
-  value: z.number().optional(),
+  selectedTag: z.string().optional().nullable(),
+  value: z.number().optional().nullable(),
 });
 
 export const updateCompletionSchema = z
   .object({
-    selectedTag: z.string().optional(),
-    value: z.number().optional(),
+    selectedTag: z.string().optional().nullable(),
+    value: z.number().optional().nullable(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "Need at least one field to update",
@@ -31,60 +31,69 @@ export async function createCompletion({
   selectedTag,
   value,
 }) {
+  console.log("SERVICE: createCompletion called with:", { habitId, userId, date });
+  
   const user = await userRepo.findById(userId);
+  console.log("SERVICE: Found user?", !!user);
   if (!user) {
     throw new Error("User not found");
   }
+  
   const habit = await habitRepo.findById(habitId);
+  console.log("SERVICE: Found habit?", !!habit);
   if (!habit) {
     throw new Error("Habit not found");
   }
+  
   if (habit.userId !== userId) {
+    console.log("SERVICE: Habit userId mismatch!");
     throw new Error("Habit does not belong to the user");
   }
 
-  const existingCompletion = await completionRepo.findByHabitAndDate(
-    habitId,
-    date,
-  );
+  const existingCompletion = await completionRepo.findByHabitAndDate(habitId, date);
+  console.log("SERVICE: Existing completion?", existingCompletion);
+  
   if (existingCompletion) {
-    return completionRepo.update(existingCompletion.id, {
+    console.log("SERVICE: Updating existing completion");
+    return await completionRepo.update(existingCompletion.id, {
       selectedTag,
       value,
     });
   }
 
-  const completion = completionRepo.create({
+  console.log("SERVICE: Creating new completion");
+  const completion = await completionRepo.create({
     habitId,
     userId,
     date,
     selectedTag,
     value,
   });
-
+  
+  console.log("SERVICE: Created completion:", completion);
   return completion;
 }
 
 export async function findAllCompletions() {
-  return completionRepo.findAll();
+  return await completionRepo.findAll();
 }
 
 export async function findCompletionById(id) {
-  return completionRepo.findById(id);
+  return await completionRepo.findById(id);
 }
 
 export async function findCompletionsByUserAndDate(userId, date) {
   if (!userId || !date) {
     throw new Error("userId and date required");
   }
-  return completionRepo.findByUserAndDate(userId, date);
+  return await completionRepo.findByUserAndDate(userId, date);
 }
 
 export async function findCompletionsByHabit(habitId) {
   if (!habitId) {
     throw new Error("habitId required");
   }
-  return completionRepo.findByHabit(habitId);
+  return await completionRepo.findByHabit(habitId);
 }
 
 export async function updateCompletion(id, updates) {
@@ -118,5 +127,5 @@ export async function deleteCompletionByHabitAndDate(userId, habitId, date) {
     return false;
   }
 
-  return completionRepo.remove(completion.id);
+  return await completionRepo.remove(completion.id);
 }

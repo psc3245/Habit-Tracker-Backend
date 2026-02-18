@@ -26,8 +26,14 @@ export async function findByHabitAndDate(habitId, date) {
   return completions.find((c) => c.habitId === habitId && c.date === date);
 }
 
-export async function findByUserAndDate(userId, date) {
-  return completions.filter((c) => c.userId === userId && c.date === date);
+export function findByUserAndDate(userId, date) {
+  console.log("Searching - userId type:", typeof userId, "date type:", typeof date);
+  completions.forEach(c => {
+    console.log(`  Completion userId: ${c.userId} (${typeof c.userId}), date: ${c.date} (${typeof c.date})`);
+    console.log(`  Match userId? ${c.userId === userId}, Match date? ${c.date === date}`);
+  });
+  const results = completions.filter((c) => c.userId === userId && c.date === date);
+  return results;
 }
 
 export async function findByHabit(habitId) {

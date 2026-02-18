@@ -51,7 +51,7 @@ export async function findCompletionsByUserAndDate(req, res) {
     }
 
     const completions =
-      await completionTrackerService.findCompletionsByUserAndDate(userId, date);
+      await completionTrackerService.findCompletionsByUserAndDate(Number(userId), date);
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -67,7 +67,7 @@ export async function findCompletionsByHabit(req, res) {
     }
 
     const completions =
-      await completionTrackerService.findCompletionsByHabit(habitId);
+      await completionTrackerService.findCompletionsByHabit(Number(habitId));
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
