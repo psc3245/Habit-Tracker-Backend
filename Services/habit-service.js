@@ -6,9 +6,15 @@ export const createHabitSchema = z.object({
   name: z.string(),
   schedule: z.string(), // Daily | Weekly | Monthly | Other ??
   target: z.number(),
-  type: z.enum(['checkbox', 'counter', 'duration', 'slider']).default('checkbox'),
+  type: z
+    .enum(["checkbox", "counter", "duration", "slider"])
+    .default("checkbox"),
   availableTags: z.array(z.string()).default([]),
   createdAt: z.coerce.date().optional(),
+  sliderMin: z.number().optional().nullable(),
+  colorLow: z.string().optional().nullable(),
+  colorMid: z.string().optional().nullable(),
+  colorHigh: z.string().optional().nullable(),
 });
 
 export const updateHabitSchema = z
@@ -19,11 +25,14 @@ export const updateHabitSchema = z
     target: z.number().optional(),
     availableTags: z.array(z.string()).default([]),
     createdAt: z.coerce.date().optional(),
+    sliderMin: z.number().optional().nullable(),
+    colorLow: z.string().optional().nullable(),
+    colorMid: z.string().optional().nullable(),
+    colorHigh: z.string().optional().nullable(),
   })
-  .refine(
-    (data) => Object.keys(data).length > 0,
-    { message: "Need at least one field to update" }
-  );
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Need at least one field to update",
+  });
 
 export async function createHabit({
   userId,
@@ -33,6 +42,10 @@ export async function createHabit({
   type,
   availableTags = [],
   createdAt,
+  sliderMin,
+  colorLow,
+  colorMid,
+  colorHigh,
 }) {
   if (!userId || !name || !target) {
     throw new Error("Needs userId, name, and target at minimum");
@@ -46,6 +59,10 @@ export async function createHabit({
     type,
     availableTags,
     createdAt,
+    sliderMin,
+    colorLow,
+    colorMid,
+    colorHigh,
   });
 
   if (!res) throw new Error("Unknown repository error");
