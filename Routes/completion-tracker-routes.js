@@ -13,5 +13,6 @@ router.get("/", completionController.findCompletionsByUserAndDate);
 router.put("/:id", completionController.updateCompletion);
 
 router.delete("/:id", completionController.deleteCompletion);
+router.delete("/:userId/:habitId", completionController.deleteCompletionByHabitAndDate);
 
 export default router;

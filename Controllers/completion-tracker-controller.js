@@ -1,9 +1,10 @@
 import * as completionTrackerService from "../Services/completion-tracker-service.js";
+import * as z from "zod";
 
 export async function createCompletionTracker(req, res) {
   try {
     const data = completionTrackerService.createCompletionSchema.parse(
-      req.body
+      req.body,
     );
     const completion = await completionTrackerService.createCompletion(data);
     res.status(201).json(completion);
@@ -50,7 +51,7 @@ export async function findCompletionsByUserAndDate(req, res) {
     }
 
     const completions =
-      await completionTrackerService.findCompletionsByUserAndDate(userId, date);
+      await completionTrackerService.findCompletionsByUserAndDate(Number(userId), date);
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -65,9 +66,8 @@ export async function findCompletionsByHabit(req, res) {
       return res.status(400).json({ error: "habitId required" });
     }
 
-    const completions = await completionTrackerService.findCompletionsByHabit(
-      habitId
-    );
+    const completions =
+      await completionTrackerService.findCompletionsByHabit(Number(habitId));
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -82,7 +82,7 @@ export async function updateCompletion(req, res) {
     }
 
     const data = completionTrackerService.updateCompletionSchema.parse(
-      req.body
+      req.body,
     );
     const updated = await completionTrackerService.updateCompletion(id, data);
 
@@ -105,6 +105,36 @@ export async function deleteCompletion(req, res) {
     if (!deleted) {
       return res.status(404).json({ error: "Completion not found" });
     }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function deleteCompletionByHabitAndDate(req, res) {
+  try {
+    const userId = Number(req.params.userId);
+    const habitId = Number(req.params.habitId);
+    const { date } = req.query;
+    
+    if (Number.isNaN(userId) || Number.isNaN(habitId)) {
+      return res.status(400).json({ error: "Invalid userId or habitId" });
+    }
+    
+    const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+    const validatedDate = dateSchema.parse(date);
+    
+    const deleted =
+      await completionTrackerService.deleteCompletionByHabitAndDate(
+        userId,
+        habitId,
+        validatedDate,
+      );
+      
+    if (!deleted) {
+      return res.status(404).json({ error: "Completion not found" });
+    }
+    
     res.json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
