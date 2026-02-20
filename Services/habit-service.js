@@ -4,7 +4,6 @@ import * as habitRepo from "../Repositories/habit-repo.js";
 export const createHabitSchema = z.object({
   userId: z.number(),
   name: z.string(),
-  schedule: z.string(), // Daily | Weekly | Monthly | Other ??
   target: z.number(),
   type: z
     .enum(["checkbox", "counter", "duration", "slider"])
@@ -15,20 +14,43 @@ export const createHabitSchema = z.object({
   colorLow: z.string().optional().nullable(),
   colorMid: z.string().optional().nullable(),
   colorHigh: z.string().optional().nullable(),
+  recurrence: z.object({
+    interval: z.number().int().min(1),
+    days: z
+      .array(z.number().int().min(0).max(6))
+      .nonempty()
+      .max(7)
+      .refine((days) => new Set(days).size === days.length),
+  }).default(
+    {
+      interval: 1,
+      days: [0, 1, 2, 3, 4, 5, 6],
+    }
+  ),
 });
 
 export const updateHabitSchema = z
   .object({
     userId: z.number().optional(),
     name: z.string().optional(),
-    schedule: z.string().optional(),
     target: z.number().optional(),
-    availableTags: z.array(z.string()).default([]),
+    availableTags: z.array(z.string()),
     createdAt: z.coerce.date().optional(),
     sliderMin: z.number().optional().nullable(),
     colorLow: z.string().optional().nullable(),
     colorMid: z.string().optional().nullable(),
     colorHigh: z.string().optional().nullable(),
+    recurrence: z
+      .object({
+        interval: z.number().int().min(1),
+        days: z
+          .array(z.number().int().min(0).max(6))
+          .nonempty()
+          .max(7)
+          .refine((days) => new Set(days).size === days.length),
+      })
+      .optional()
+      .nullable(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "Need at least one field to update",
@@ -37,7 +59,6 @@ export const updateHabitSchema = z
 export async function createHabit({
   userId,
   name,
-  schedule,
   target,
   type,
   availableTags = [],
@@ -46,6 +67,7 @@ export async function createHabit({
   colorLow,
   colorMid,
   colorHigh,
+  recurrence,
 }) {
   if (!userId || !name || !target) {
     throw new Error("Needs userId, name, and target at minimum");
@@ -54,7 +76,6 @@ export async function createHabit({
   const res = habitRepo.create({
     userId,
     name,
-    schedule,
     target,
     type,
     availableTags,
@@ -63,6 +84,7 @@ export async function createHabit({
     colorLow,
     colorMid,
     colorHigh,
+    recurrence,
   });
 
   if (!res) throw new Error("Unknown repository error");
