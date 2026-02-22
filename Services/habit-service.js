@@ -33,9 +33,9 @@ export const updateHabitSchema = z
   .object({
     userId: z.number().optional(),
     name: z.string().optional(),
+    type: z.enum(["checkbox", "counter", "duration", "slider"]).optional(),
     target: z.number().optional(),
-    availableTags: z.array(z.string()),
-    createdAt: z.coerce.date().optional(),
+    availableTags: z.array(z.string()).optional(),
     sliderMin: z.number().optional().nullable(),
     colorLow: z.string().optional().nullable(),
     colorMid: z.string().optional().nullable(),
