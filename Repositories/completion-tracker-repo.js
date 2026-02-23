@@ -26,7 +26,7 @@ export async function findByHabitAndDate(habitId, date) {
   return completions.find((c) => c.habitId === habitId && c.date === date);
 }
 
-export function findByUserAndDate(userId, date) {
+export async function findByUserAndDate(userId, date) {
   console.log("Searching - userId type:", typeof userId, "date type:", typeof date);
   console.log("Searching for exact date string:", date);
   completions.forEach(c => {
@@ -37,6 +37,10 @@ export function findByUserAndDate(userId, date) {
   const results = completions.filter((c) => c.userId === userId && c.date === date);
   console.log("Found:", results);
   return results;
+}
+
+export async function findByUserAndDateRange(userId, startDate, endDate) {
+  return completions.filter((c) => c.userId === userId && c.date >= startDate && c.date <= endDate);
 }
 
 export async function findByHabit(habitId) {

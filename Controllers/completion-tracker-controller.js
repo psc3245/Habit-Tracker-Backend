@@ -51,8 +51,31 @@ export async function findCompletionsByUserAndDate(req, res) {
     }
 
     const completions =
-      await completionTrackerService.findCompletionsByUserAndDate(Number(userId), date);
+      await completionTrackerService.findCompletionsByUserAndDate(
+        Number(userId),
+        date,
+      );
     res.json(completions);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function findCompletionsByUserAndDateRange(req, res) {
+  try {
+    const { userId, startDate, endDate } = req.query;
+    if (!userId || !startDate || !endDate) {
+      return res
+        .status(400)
+        .json({ error: "userId, start date and end date required" });
+    }
+    const completions =
+      await completionTrackerService.findCompletionsByUserAndDateRange(
+        Number(userId),
+        startDate,
+        endDate,
+      );
+      res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -66,8 +89,9 @@ export async function findCompletionsByHabit(req, res) {
       return res.status(400).json({ error: "habitId required" });
     }
 
-    const completions =
-      await completionTrackerService.findCompletionsByHabit(Number(habitId));
+    const completions = await completionTrackerService.findCompletionsByHabit(
+      Number(habitId),
+    );
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -116,25 +140,25 @@ export async function deleteCompletionByHabitAndDate(req, res) {
     const userId = Number(req.params.userId);
     const habitId = Number(req.params.habitId);
     const { date } = req.query;
-    
+
     if (Number.isNaN(userId) || Number.isNaN(habitId)) {
       return res.status(400).json({ error: "Invalid userId or habitId" });
     }
-    
+
     const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
     const validatedDate = dateSchema.parse(date);
-    
+
     const deleted =
       await completionTrackerService.deleteCompletionByHabitAndDate(
         userId,
         habitId,
         validatedDate,
       );
-      
+
     if (!deleted) {
       return res.status(404).json({ error: "Completion not found" });
     }
-    
+
     res.json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err.message });

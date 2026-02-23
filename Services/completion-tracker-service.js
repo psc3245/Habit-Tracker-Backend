@@ -96,6 +96,11 @@ export async function findCompletionsByHabit(habitId) {
   return await completionRepo.findByHabit(habitId);
 }
 
+export async function findCompletionsByUserAndDateRange(userId, startDate, endDate) {
+  if (!userId || !startDate || !endDate) throw new Error("Need all parameters");
+  return await completionRepo.findByUserAndDateRange(userId, startDate, endDate);
+}
+
 export async function updateCompletion(id, updates) {
   if (!updates || Object.keys(updates).length === 0) {
     throw new Error("No updates provided");
