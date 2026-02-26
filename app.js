@@ -6,11 +6,13 @@ import completionRoutes from "./Routes/completion-tracker-routes.js";
 import cors from "cors";
 
 const app = express();
-app.use(express.json());
 
 app.use(cors({
-  origin: "http://localhost:5173" 
+  origin: "http://localhost:5173",
+  origin: "https://habit-tracker-psc3245.vercel.app/" 
 }));
+
+app.use(express.json());
 
 app.use("/users", userRoutes);
 
