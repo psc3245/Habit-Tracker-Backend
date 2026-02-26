@@ -4,8 +4,8 @@ import * as habitRepo from "../Repositories/habit-repo.js";
 import * as completionRepo from "../Repositories/completion-tracker-repo.js";
 
 export const createCompletionSchema = z.object({
-  habitId: z.number(),
-  userId: z.number(),
+  habitId: z.string(),
+  userId: z.string(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   selectedTag: z.string().optional().nullable(),
   value: z.number().optional().nullable(),
@@ -41,7 +41,7 @@ export async function createCompletion({
     throw new Error("Habit not found");
   }
 
-  if (habit.userId !== userId) {
+  if (habit.user_id !== userId) {
     throw new Error("Habit does not belong to the user");
   }
 
@@ -51,7 +51,7 @@ export async function createCompletion({
   );
 
   if (existingCompletion) {
-    return await completionRepo.update(existingCompletion.id, {
+    return await completionRepo.update(existingCompletion.completion_id, {
       selectedTag,
       value,
     });
@@ -59,7 +59,6 @@ export async function createCompletion({
 
   return await completionRepo.create({
     habitId,
-    userId,
     date,
     selectedTag,
     value,
@@ -128,7 +127,7 @@ export async function deleteCompletionByHabitAndDate(userId, habitId, date) {
   }
 
   const habit = await habitRepo.findById(habitId);
-  if (!habit || habit.userId !== userId) {
+  if (!habit || habit.user_id !== userId) {
     throw new Error("Habit not found or does not belong to user");
   }
 
@@ -137,5 +136,5 @@ export async function deleteCompletionByHabitAndDate(userId, habitId, date) {
     return false;
   }
 
-  return await completionRepo.remove(completion.id);
+  return await completionRepo.remove(completion.completion_id);
 }

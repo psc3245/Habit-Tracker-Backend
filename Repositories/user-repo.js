@@ -1,79 +1,44 @@
-// repositories/user.repository.js
-let users = [];
-let nextId = 1;
+import pool from '../db/db.js'
 
-export function signUp(user) {
-  const newUser = {
-    id: nextId++,
-    habitIds: [],
-    ...user,
-  };
-
-  users.push(newUser);
-  return newUser;
+export async function signUp(user) {
+  const { username, email, password, dateOfBirth } = user
+  const result = await pool.query(
+    'INSERT INTO users (username, email, password, date_of_birth) VALUES ($1, $2, $3, $4) RETURNING *',
+    [username, email, password, dateOfBirth]
+  )
+  return result.rows[0]
 }
 
-export function findAll() {
-  return users;
+export async function findAll() {
+  const result = await pool.query('SELECT * FROM users')
+  return result.rows
 }
 
-export function findById(id) {
-  return users.find(u => u.id === id) ?? null;
+export async function findById(id) {
+  const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id])
+  return result.rows[0] ?? null
 }
 
-export function findByUsername(username) {
-  return users.find(u => u.username === username) ?? null;
+export async function findByUsername(username) {
+  const result = await pool.query('SELECT * FROM users WHERE username = $1', [username])
+  return result.rows[0] ?? null
 }
 
-export function login({ email, username, pass }) {
-  let found;
-
-  if (email) {
-    found = users.find(u => u.email === email) ?? null;
-  } else {
-    found = users.find(u => u.username === username) ?? null;
-  }
-
-  if (!found) return null;
-  return found.pass === pass ? found : null;
+export async function findByEmail(email) {
+  const result = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+  return result.rows[0] ?? null
 }
 
-export function update(id, updates) {
-  const user = users.find(u => u.id === id);
-  if (!user) return null;
-
-  Object.assign(user, updates);
-  return user;
+export async function update(id, updates) {
+  const { username, email, password, dateOfBirth, firstName, lastName } = updates
+  const result = await pool.query(
+    'UPDATE users SET username = $1, email = $2, password = $3, date_of_birth = $4, first_name = $5, last_name = $6, updated_at = NOW() WHERE user_id = $7 RETURNING *',
+    [username, email, password, dateOfBirth, firstName, lastName, id]
+  )
+  return result.rows[0] ?? null
 }
 
-export function remove(id) {
-  const index = users.findIndex(u => u.id === id);
-  if (index === -1) return false;
-
-  users.splice(index, 1);
-  return true;
-}
-
-/* =========================
-   HABIT RELATION HELPERS
-   ========================= */
-
-export function addHabitToUser(userId, habitId) {
-  const user = findById(userId);
-  if (!user) return null;
-
-  if (!user.habitIds) {
-    user.habitIds = [];
-  }
-
-  user.habitIds.push(habitId);
-  return user;
-}
-
-export function removeHabitFromUser(userId, habitId) {
-  const user = findById(userId);
-  if (!user || !user.habitIds) return null;
-
-  user.habitIds = user.habitIds.filter(id => id !== habitId);
-  return user;
+export async function remove(id) {
+  const result = await pool.query('DELETE FROM users WHERE user_id = $1 RETURNING *', [id])
+  return result.rows[0] ? true : false
 }

@@ -2,7 +2,7 @@ import * as z from "zod";
 import * as habitRepo from "../Repositories/habit-repo.js";
 
 export const createHabitSchema = z.object({
-  userId: z.number(),
+  userId: z.string(),
   name: z.string(),
   target: z.number(),
   type: z
@@ -31,7 +31,7 @@ export const createHabitSchema = z.object({
 
 export const updateHabitSchema = z
   .object({
-    userId: z.number().optional(),
+    userId: z.string().optional(),
     name: z.string().optional(),
     type: z.enum(["checkbox", "counter", "duration", "slider"]).optional(),
     target: z.number().optional(),
@@ -73,7 +73,7 @@ export async function createHabit({
     throw new Error("Needs userId, name, and target at minimum");
   }
 
-  const res = habitRepo.create({
+  const res = await habitRepo.create({
     userId,
     name,
     target,
@@ -93,11 +93,11 @@ export async function createHabit({
 }
 
 export async function findAllHabits() {
-  return habitRepo.findAll();
+  return await habitRepo.findAll();
 }
 
 export async function findHabitById(id) {
-  return habitRepo.findById(id);
+  return await habitRepo.findById(id);
 }
 
 export async function updateHabit(id, updates) {
@@ -105,7 +105,25 @@ export async function updateHabit(id, updates) {
     throw new Error("id required");
   }
 
-  return habitRepo.update(id, updates);
+  const existing = await habitRepo.findById(id);
+  if (!existing) throw new Error("Habit not found");
+
+  const merged = {
+    name: updates.name ?? existing.name,
+    target: updates.target ?? existing.target,
+    type: updates.type ?? existing.type,
+    availableTags: updates.availableTags ?? existing.available_tags,
+    sliderMin: updates.sliderMin ?? existing.slider_min,
+    colorLow: updates.colorLow ?? existing.color_low,
+    colorMid: updates.colorMid ?? existing.color_mid,
+    colorHigh: updates.colorHigh ?? existing.color_high,
+    recurrence: updates.recurrence ?? {
+      interval: existing.recurrence_interval,
+      days: existing.recurrence_days,
+    },
+  };
+
+  return await habitRepo.update(id, merged);
 }
 
 export async function deleteHabit(id) {
@@ -113,5 +131,5 @@ export async function deleteHabit(id) {
     throw new Error("id required");
   }
 
-  return habitRepo.remove(id);
+  return await habitRepo.remove(id);
 }

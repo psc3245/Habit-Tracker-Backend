@@ -23,11 +23,9 @@ export async function login(req, res) {
 export async function findAllUsersOrByUsername(req, res) {
   try {
     const { username } = req.query;
-
     const users = username
       ? await userService.findByUsername(username)
       : await userService.findAll();
-
     res.json(users);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -36,18 +34,11 @@ export async function findAllUsersOrByUsername(req, res) {
 
 export async function findUserById(req, res) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({ error: "Invalid id" });
-    }
-
+    const { id } = req.params;
     const user = await userService.findById(id);
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -56,19 +47,12 @@ export async function findUserById(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({ error: "Invalid id" });
-    }
-
+    const { id } = req.params;
     const data = userService.updateUserSchema.parse(req.body);
     const updated = await userService.updateUser(id, data);
-
     if (!updated) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -77,18 +61,11 @@ export async function updateUser(req, res) {
 
 export async function deleteUser(req, res) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({ error: "Invalid id" });
-    }
-
+    const { id } = req.params;
     const deleted = await userService.deleteUser(id);
-
     if (!deleted) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.status(204).send();
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -97,12 +74,7 @@ export async function deleteUser(req, res) {
 
 export async function findUserHabits(req, res) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({ error: "Invalid id" });
-    }
-
+    const { id } = req.params;
     const habits = await userService.findHabitsByUserId(id);
     res.json(habits);
   } catch (err) {
