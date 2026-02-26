@@ -8,8 +8,10 @@ import cors from "cors";
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
-  origin: "https://habit-tracker-psc3245.vercel.app/" 
+  origin: [
+    "http://localhost:5173", 
+    "https://habit-tracker-psc3245.vercel.app"
+  ]
 }));
 
 app.use(express.json());
