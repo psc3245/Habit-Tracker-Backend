@@ -1,12 +1,12 @@
 import pool from '../db/db.js'
 
 export async function create(habit) {
-  const { userId, name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence } = habit
+  const { userId, name, target, type, availableTags, createdAt, sliderMin, colorLow, colorMid, colorHigh, recurrence } = habit
 
   const result = await pool.query(
-    `INSERT INTO habits (user_id, name, target, type, available_tags, slider_min, color_low, color_mid, color_high, recurrence_interval, recurrence_days)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-    [userId, name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence.interval, recurrence.days]
+    `INSERT INTO habits (user_id, name, target, type, available_tags, created_at, slider_min, color_low, color_mid, color_high, recurrence_interval, recurrence_days)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+    [userId, name, target, type, availableTags, createdAt, sliderMin, colorLow, colorMid, colorHigh, recurrence.interval, recurrence.days]
   )
   return result.rows[0]
 }
