@@ -8,6 +8,7 @@ router.post("/", completionController.createCompletionTracker);
 router.get("/all", completionController.findAllCompletions);
 router.get("/habit", completionController.findCompletionsByHabit);
 router.get("/range", completionController.findCompletionsByUserAndDateRange);
+router.get("/user", completionController.findCompletionsForUser);
 router.get("/", completionController.findCompletionsByUserAndDate);
 router.get("/:id", completionController.findCompletionById);
 

@@ -31,47 +31,39 @@ export async function createCompletion({
   selectedTag,
   value,
 }) {
-  console.log("SERVICE: createCompletion called with:", { habitId, userId, date });
-  
   const user = await userRepo.findById(userId);
-  console.log("SERVICE: Found user?", !!user);
   if (!user) {
     throw new Error("User not found");
   }
-  
+
   const habit = await habitRepo.findById(habitId);
-  console.log("SERVICE: Found habit?", !!habit);
   if (!habit) {
     throw new Error("Habit not found");
   }
-  
+
   if (habit.userId !== userId) {
-    console.log("SERVICE: Habit userId mismatch!");
     throw new Error("Habit does not belong to the user");
   }
 
-  const existingCompletion = await completionRepo.findByHabitAndDate(habitId, date);
-  console.log("SERVICE: Existing completion?", existingCompletion);
-  
+  const existingCompletion = await completionRepo.findByHabitAndDate(
+    habitId,
+    date,
+  );
+
   if (existingCompletion) {
-    console.log("SERVICE: Updating existing completion");
     return await completionRepo.update(existingCompletion.id, {
       selectedTag,
       value,
     });
   }
 
-  console.log("SERVICE: Creating new completion");
-  const completion = await completionRepo.create({
+  return await completionRepo.create({
     habitId,
     userId,
     date,
     selectedTag,
     value,
   });
-  
-  console.log("SERVICE: Created completion:", completion);
-  return completion;
 }
 
 export async function findAllCompletions() {
@@ -96,9 +88,22 @@ export async function findCompletionsByHabit(habitId) {
   return await completionRepo.findByHabit(habitId);
 }
 
-export async function findCompletionsByUserAndDateRange(userId, startDate, endDate) {
+export async function findCompletionsByUserAndDateRange(
+  userId,
+  startDate,
+  endDate,
+) {
   if (!userId || !startDate || !endDate) throw new Error("Need all parameters");
-  return await completionRepo.findByUserAndDateRange(userId, startDate, endDate);
+  return await completionRepo.findByUserAndDateRange(
+    userId,
+    startDate,
+    endDate,
+  );
+}
+
+export async function findCompletionsByUserId(userId) {
+  if (!userId) throw new Error("Needs user id");
+  return await completionRepo.findByUserId(userId);
 }
 
 export async function updateCompletion(id, updates) {

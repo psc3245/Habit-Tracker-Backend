@@ -14,8 +14,6 @@ export async function login(req, res) {
   try {
     const data = userService.loginSchema.parse(req.body);
     const user = await userService.login(data);
-    console.log("LOGIN: Found user:", user);
-    console.log("LOGIN: User ID:", user.id);
     res.status(200).json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });

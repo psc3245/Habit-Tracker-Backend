@@ -27,16 +27,12 @@ export async function findByHabitAndDate(habitId, date) {
 }
 
 export async function findByUserAndDate(userId, date) {
-  console.log("Searching - userId type:", typeof userId, "date type:", typeof date);
-  console.log("Searching for exact date string:", date);
-  completions.forEach(c => {
-    console.log(`  Completion userId: ${c.userId} (${typeof c.userId}), date: ${c.date} (${typeof c.date})`);
-    console.log(`  Comparing: "${c.date}" === "${date}"`);
-    console.log(`  Match userId? ${c.userId === userId}, Match date? ${c.date === date}`);
-  });
   const results = completions.filter((c) => c.userId === userId && c.date === date);
-  console.log("Found:", results);
   return results;
+}
+
+export async function findByUserId(userId) {
+  return completions.filter((c) => c.userId === userId);
 }
 
 export async function findByUserAndDateRange(userId, startDate, endDate) {

@@ -6,7 +6,9 @@ export async function createCompletionTracker(req, res) {
     const data = completionTrackerService.createCompletionSchema.parse(
       req.body,
     );
+    console.log(data);
     const completion = await completionTrackerService.createCompletion(data);
+    console.log(completion);
     res.status(201).json(completion);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -16,6 +18,17 @@ export async function createCompletionTracker(req, res) {
 export async function findAllCompletions(req, res) {
   try {
     const completions = await completionTrackerService.findAllCompletions();
+    res.json(completions);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function findCompletionsForUser(req, res) {
+  try {
+    const id = Number(req.query.id);
+    const completions =
+      await completionTrackerService.findCompletionsByUserId(id);
     res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -75,7 +88,7 @@ export async function findCompletionsByUserAndDateRange(req, res) {
         startDate,
         endDate,
       );
-      res.json(completions);
+    res.json(completions);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

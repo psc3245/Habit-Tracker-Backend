@@ -45,7 +45,6 @@ export async function signUp({ email, username, pass, dob }) {
   let res = userRepo.signUp({ email, username, pass, dob });
   if (!res) throw new Error("Signup attempt failed");
 
-  console.log("Signup complete", res);
   return res;
 }
 
@@ -55,7 +54,6 @@ export async function login({ email, username, pass }) {
   const user = await userRepo.login({ email, username, pass });
   if (!user) throw new Error("Login attempt failed");
 
-  console.log("login complete", user);
   return user;
 }
 
@@ -89,6 +87,5 @@ export async function findHabitsByUserId(userId) {
   const allHabits = habitRepo.findAll();
   const userHabits = allHabits.filter((h) => h.userId === userId);
 
-  console.log("Found habits for userId", userId, userHabits);
   return userHabits;
 }
