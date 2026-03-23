@@ -7,6 +7,8 @@ export const signUpSchema = z.object({
   username: z.string(),
   pass: z.string(),
   dob: z.coerce.date(),
+  firstName: z.string(),
+  lastName: z.string(),
 });
 
 export const loginSchema = z
@@ -34,15 +36,24 @@ export const updateUserSchema = z
     username: z.string().optional(),
     pass: z.string().optional(),
     dob: z.coerce.date().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
   })
-  .refine((data) => data.email || data.username || data.pass || data.dob, {
+  .refine((data) => data.email || data.username || data.pass || data.dob || data.firstName || data.lastName, {
     message: "Must provide at least one field besides id",
   });
 
-export async function signUp({ email, username, pass, dob }) {
+export async function signUp({ email, username, pass, dob, firstName, lastName }) {
   if (!email) throw new Error("email required");
 
-  const res = await userRepo.signUp({ email, username, password: pass, dateOfBirth: dob });
+  const res = await userRepo.signUp({
+    email,
+    username,
+    password: pass,
+    dateOfBirth: dob,
+    firstName: firstName,
+    lastName: lastName,
+  });
   if (!res) throw new Error("Signup attempt failed");
 
   return res;

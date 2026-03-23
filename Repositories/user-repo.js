@@ -1,10 +1,10 @@
 import pool from '../db/db.js'
 
 export async function signUp(user) {
-  const { username, email, password, dateOfBirth } = user
+  const { username, email, password, dateOfBirth, firstName, lastName } = user
   const result = await pool.query(
-    'INSERT INTO users (username, email, password, date_of_birth) VALUES ($1, $2, $3, $4) RETURNING *',
-    [username, email, password, dateOfBirth]
+    'INSERT INTO users (username, email, password, date_of_birth, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+    [username, email, password, dateOfBirth, firstName, lastName]
   )
   return result.rows[0]
 }
