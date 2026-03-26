@@ -89,7 +89,14 @@ export async function findByUsername(username) {
 
 export async function updateUser(id, updates) {
   if (!id) throw new Error("id required");
-  return await userRepo.update(id, updates);
+  return await userRepo.update(id, {
+    username: updates.username,
+    email: updates.email,
+    password: updates.pass,
+    dateOfBirth: updates.dob,
+    firstName: updates.firstName,
+    lastName: updates.lastName,
+  });
 }
 
 export async function deleteUser(id) {
