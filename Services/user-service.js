@@ -1,6 +1,9 @@
 import * as z from "zod";
+import bcrypt from "bcrypt";
 import * as userRepo from "../Repositories/user-repo.js";
 import * as habitRepo from "../Repositories/habit-repo.js";
+
+const saltRounds = 10;
 
 export const signUpSchema = z.object({
   email: z.email(),
@@ -39,20 +42,37 @@ export const updateUserSchema = z
     firstName: z.string().optional(),
     lastName: z.string().optional(),
   })
-  .refine((data) => data.email || data.username || data.pass || data.dob || data.firstName || data.lastName, {
-    message: "Must provide at least one field besides id",
-  });
+  .refine(
+    (data) =>
+      data.email ||
+      data.username ||
+      data.pass ||
+      data.dob ||
+      data.firstName ||
+      data.lastName,
+    {
+      message: "Must provide at least one field besides id",
+    },
+  );
 
-export async function signUp({ email, username, pass, dob, firstName, lastName }) {
+export async function signUp({
+  email,
+  username,
+  pass,
+  dob,
+  firstName,
+  lastName,
+}) {
   if (!email) throw new Error("email required");
+  const hash = await bcrypt.hash(pass, saltRounds);
 
   const res = await userRepo.signUp({
     email,
     username,
-    password: pass,
+    password: hash,
     dateOfBirth: dob,
-    firstName: firstName,
-    lastName: lastName,
+    firstName,
+    lastName,
   });
   if (!res) throw new Error("Signup attempt failed");
 
@@ -68,7 +88,8 @@ export async function login({ email, username, pass }) {
   if (!email) {
     user = await userRepo.findByUsername(username);
   }
-  if (!user || user.password != pass) throw new Error("Login attempt failed");
+  const passwordsMatch = await bcrypt.compare(pass, user.password);
+  if (!user || !passwordsMatch) throw new Error("Login attempt failed");
 
   return user;
 }
@@ -89,13 +110,20 @@ export async function findByUsername(username) {
 
 export async function updateUser(id, updates) {
   if (!id) throw new Error("id required");
+  const existing = await userRepo.findById(id);
+  if (!existing) throw new Error("User not found");
+
+  const password = updates.pass
+    ? await bcrypt.hash(updates.pass, saltRounds)
+    : existing.password;
+
   return await userRepo.update(id, {
-    username: updates.username,
-    email: updates.email,
-    password: updates.pass,
-    dateOfBirth: updates.dob,
-    firstName: updates.firstName,
-    lastName: updates.lastName,
+    username: updates.username ?? existing.username,
+    email: updates.email ?? existing.email,
+    password,
+    dateOfBirth: updates.dob ?? existing.date_of_birth,
+    firstName: updates.firstName ?? existing.first_name,
+    lastName: updates.lastName ?? existing.last_name,
   });
 }
 
