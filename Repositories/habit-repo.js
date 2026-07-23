@@ -27,13 +27,13 @@ export async function findByUserId(userId) {
 }
 
 export async function update(id, updates) {
-  const { name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence } = updates
+  const { name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence, archived } = updates
 
   const result = await pool.query(
     `UPDATE habits SET name = $1, target = $2, type = $3, available_tags = $4, slider_min = $5,
-     color_low = $6, color_mid = $7, color_high = $8, recurrence_interval = $9, recurrence_days = $10, updated_at = NOW()
-     WHERE habit_id = $11 RETURNING *`,
-    [name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence?.interval, recurrence?.days, id]
+     color_low = $6, color_mid = $7, color_high = $8, recurrence_interval = $9, recurrence_days = $10, archived = $11, updated_at = NOW()
+     WHERE habit_id = $12 RETURNING *`,
+    [name, target, type, availableTags, sliderMin, colorLow, colorMid, colorHigh, recurrence?.interval, recurrence?.days, archived, id]
   )
   return result.rows[0] ?? null
 }
