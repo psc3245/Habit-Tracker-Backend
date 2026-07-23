@@ -9,12 +9,14 @@ export const createCompletionSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   selectedTag: z.string().optional().nullable(),
   value: z.number().optional().nullable(),
+  textValue: z.string().optional().nullable(),
 });
 
 export const updateCompletionSchema = z
   .object({
     selectedTag: z.string().optional().nullable(),
     value: z.number().optional().nullable(),
+    textValue: z.string().optional().nullable(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "Need at least one field to update",
@@ -30,6 +32,7 @@ export async function createCompletion({
   date,
   selectedTag,
   value,
+  textValue,
 }) {
   const user = await userRepo.findById(userId);
   if (!user) {
@@ -54,6 +57,7 @@ export async function createCompletion({
     return await completionRepo.update(existingCompletion.completion_id, {
       selectedTag,
       value,
+      textValue,
     });
   }
 
@@ -62,6 +66,7 @@ export async function createCompletion({
     date,
     selectedTag,
     value,
+    textValue,
   });
 }
 

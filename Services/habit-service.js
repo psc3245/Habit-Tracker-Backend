@@ -6,7 +6,7 @@ export const createHabitSchema = z.object({
   name: z.string(),
   target: z.number(),
   type: z
-    .enum(["checkbox", "counter", "duration", "slider"])
+    .enum(["checkbox", "counter", "duration", "slider", "rating", "checknote", "shorttext", "journal"])
     .default("checkbox"),
   availableTags: z.array(z.string()).default([]),
   createdAt: z.coerce.date().optional(),
@@ -33,13 +33,14 @@ export const updateHabitSchema = z
   .object({
     userId: z.string().optional(),
     name: z.string().optional(),
-    type: z.enum(["checkbox", "counter", "duration", "slider"]).optional(),
+    type: z.enum(["checkbox", "counter", "duration", "slider", "rating", "checknote", "shorttext", "journal"]).optional(),
     target: z.number().optional(),
     availableTags: z.array(z.string()).optional(),
     sliderMin: z.number().optional().nullable(),
     colorLow: z.string().optional().nullable(),
     colorMid: z.string().optional().nullable(),
     colorHigh: z.string().optional().nullable(),
+    archived: z.boolean().optional(),
     recurrence: z
       .object({
         interval: z.number().int().min(1),
@@ -117,6 +118,7 @@ export async function updateHabit(id, updates) {
     colorLow: updates.colorLow ?? existing.color_low,
     colorMid: updates.colorMid ?? existing.color_mid,
     colorHigh: updates.colorHigh ?? existing.color_high,
+    archived: updates.archived ?? existing.archived,
     recurrence: updates.recurrence ?? {
       interval: existing.recurrence_interval,
       days: existing.recurrence_days,

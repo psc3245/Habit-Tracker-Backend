@@ -1,9 +1,9 @@
 import pool from '../db/db.js'
 
-export async function create({ habitId, date, selectedTag, value }) {
+export async function create({ habitId, date, selectedTag, value, textValue }) {
   const result = await pool.query(
-    'INSERT INTO completions (habit_id, date, selected_tag, value) VALUES ($1, $2, $3, $4) RETURNING *',
-    [habitId, date, selectedTag, value]
+    'INSERT INTO completions (habit_id, date, selected_tag, value, text_value) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    [habitId, date, selectedTag, value, textValue]
   )
   return result.rows[0]
 }
@@ -56,10 +56,10 @@ export async function findByHabit(habitId) {
 }
 
 export async function update(id, updates) {
-  const { selectedTag, value } = updates
+  const { selectedTag, value, textValue } = updates
   const result = await pool.query(
-    'UPDATE completions SET selected_tag = $1, value = $2, updated_at = NOW() WHERE completion_id = $3 RETURNING *',
-    [selectedTag, value, id]
+    'UPDATE completions SET selected_tag = $1, value = $2, text_value = $3, updated_at = NOW() WHERE completion_id = $4 RETURNING *',
+    [selectedTag, value, textValue, id]
   )
   return result.rows[0] ?? null
 }
